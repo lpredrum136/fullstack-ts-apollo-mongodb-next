@@ -1,6 +1,8 @@
 import { prop, getModelForClass } from '@typegoose/typegoose'
 import mongoose from 'mongoose'
 import { Field, ID, InputType, ObjectType } from 'type-graphql'
+import { FieldError } from './FieldError'
+import { IMutationResponse } from './MutationResponse'
 
 @ObjectType() // GraphQL stuff
 export class User {
@@ -31,6 +33,22 @@ export class AuthInput {
 
   @Field()
   password: string
+}
+
+@ObjectType({ implements: IMutationResponse })
+export class UserMutationResponse implements IMutationResponse {
+  code: number
+  success: boolean
+  message?: string
+
+  @Field({ nullable: true })
+  user?: User
+
+  @Field({ nullable: true })
+  accessToken?: string
+
+  @Field(_type => [FieldError], { nullable: true })
+  errors?: FieldError[]
 }
 
 export const UserModel = getModelForClass(User)
