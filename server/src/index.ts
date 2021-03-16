@@ -6,6 +6,7 @@ import mongoose from 'mongoose'
 import { buildSchema } from 'type-graphql'
 import { ApolloServer } from 'apollo-server-express'
 import { HelloResolver } from './resolvers/hello'
+import { UserResolver } from './resolvers/user'
 
 const connectDB = async () => {
   try {
@@ -18,7 +19,7 @@ const connectDB = async () => {
         useFindAndModify: false
       }
     )
-    console.log('MongoDB connected yay me')
+    console.log('MongoDB connected yay')
   } catch (error) {
     console.log(error.message)
     process.exit(1)
@@ -30,9 +31,10 @@ connectDB()
 const main = async () => {
   const server = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver],
+      resolvers: [HelloResolver, UserResolver],
       validate: false
-    })
+    }),
+    context: ({ req, res }) => ({ req, res })
   })
 
   const app = express()
