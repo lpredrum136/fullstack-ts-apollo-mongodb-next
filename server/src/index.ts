@@ -7,6 +7,7 @@ import { buildSchema } from 'type-graphql'
 import { ApolloServer } from 'apollo-server-express'
 import { HelloResolver } from './resolvers/hello'
 import { UserResolver } from './resolvers/user'
+import { GraphQLContext } from './types'
 
 const connectDB = async () => {
   try {
@@ -34,7 +35,7 @@ const main = async () => {
       resolvers: [HelloResolver, UserResolver],
       validate: false
     }),
-    context: ({ req, res }) => ({ req, res })
+    context: ({ req, res }: GraphQLContext) => ({ req, res })
   })
 
   const app = express()
