@@ -1,7 +1,11 @@
-require('dotenv').config();
+require('dotenv').config()
+import 'reflect-metadata'
 
-import express from 'express';
-import mongoose from 'mongoose';
+import express from 'express'
+import mongoose from 'mongoose'
+import { buildSchema } from 'type-graphql'
+import { ApolloServer } from 'apollo-server-express'
+import { HelloResolver } from './resolvers/hello'
 
 const connectDB = async () => {
   try {
@@ -11,20 +15,35 @@ const connectDB = async () => {
         useCreateIndex: true,
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        useFindAndModify: false,
+        useFindAndModify: false
       }
-    );
-    console.log('MongoDB connected yay me');
+    )
+    console.log('MongoDB connected yay me')
   } catch (error) {
-    console.log(error.message);
-    process.exit(1);
+    console.log(error.message)
+    process.exit(1)
   }
-};
+}
 
-connectDB();
+connectDB()
 
-const app = express();
+const main = async () => {
+  const server = new ApolloServer({
+    schema: await buildSchema({
+      resolvers: [HelloResolver],
+      validate: false
+    })
+  })
 
-const PORT = process.env.PORT || 4000;
+  const app = express()
+  server.applyMiddleware({ app })
 
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+  const PORT = process.env.PORT || 4000
+  app.listen(PORT, () =>
+    console.log(
+      `Server started on port ${PORT}. Apollo Server started at localhost:${PORT}${server.graphqlPath}`
+    )
+  )
+}
+
+main().catch(error => console.log(error))
