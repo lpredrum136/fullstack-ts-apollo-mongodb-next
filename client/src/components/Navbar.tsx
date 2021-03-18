@@ -1,12 +1,29 @@
+import { useApolloClient } from '@apollo/client'
 import { Button } from '@chakra-ui/button'
 import { Box, Flex, Link } from '@chakra-ui/layout'
 import NextLink from 'next/link'
+import { MeDocument, MeQuery, useMeQuery } from '../generated/graphql'
 
 const Navbar = () => {
-  const auth = false
+  const client = useApolloClient()
+
+  const { data, loading, error: _useMeQueryError } = useMeQuery()
+
+  const logout = () => {
+    localStorage.removeItem('lireddit-accessToken')
+    client.writeQuery<MeQuery>({
+      query: MeDocument,
+      data: {
+        me: null
+      }
+    })
+  }
+
   let body = null
 
-  if (!auth) {
+  if (loading) {
+    // do nothing, body === null
+  } else if (!data?.me) {
     body = (
       <>
         <NextLink href="/login">
@@ -21,7 +38,9 @@ const Navbar = () => {
     body = (
       <Flex>
         <Box mr={2}>Username</Box>
-        <Button variant="link">Logout</Button>
+        <Button variant="link" onClick={logout}>
+          Logout
+        </Button>
       </Flex>
     )
   }
