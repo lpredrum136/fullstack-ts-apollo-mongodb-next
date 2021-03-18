@@ -1,0 +1,13 @@
+mutation LoginUser($loginInput: AuthInput!) {
+  login(loginInput: $loginInput) {
+    ...mutationResponseStatuses
+    user {
+      ...userInfo
+    }
+    errors {
+      field
+      message
+    }
+    accessToken
+  }
+}
