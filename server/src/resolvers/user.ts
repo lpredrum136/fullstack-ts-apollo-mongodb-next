@@ -14,6 +14,7 @@ import { GraphQLContext, JWTData } from '../types'
 @Resolver()
 export class UserResolver {
   @Query(_returns => User, { nullable: true })
+  // ME
   async me(@Ctx() { req }: GraphQLContext): Promise<User | null> {
     try {
       const authHeader = req.header('Authorization')
@@ -34,6 +35,8 @@ export class UserResolver {
       return null
     }
   }
+
+  // REGISTER
   @Mutation(_returns => UserMutationResponse)
   async register(
     @Arg('registerInput') registerInput: AuthInput
@@ -116,6 +119,7 @@ export class UserResolver {
     }
   }
 
+  // LOGIn
   @Mutation(_returns => UserMutationResponse)
   async login(
     @Arg('loginInput') loginInput: AuthInput
